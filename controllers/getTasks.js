@@ -1,26 +1,8 @@
 const axios = require('axios');
 require("dotenv").config()
+const criaLogin = require('./login.js');
 
-let token; // Variável para armazenar o token
-
-async function criaLogin() {
-    let apiKey = process.env.API_KEY;
-    let apiToken = process.env.API_TOKEN;
-
-    try {
-        const resposta = await axios.get(
-            `https://api.auvo.com.br/v2/login/?apiKey=${apiKey}&apiToken=${apiToken}`
-        );
-
-        token = resposta.data.result.accessToken; // Armazena o token na variável
-        return token; // Retorna o token
-    } catch (erro) {
-        console.error('Erro ao realizar chamada GET:', erro);
-    }
-}
-
-
-async function getTasks() {
+async function getTasks(token) {
     let auvotoken = `Bearer ${token}`;
 
     const config = {
@@ -42,10 +24,10 @@ async function getTasks() {
 }
 
 async function iniciar() {
-    await criaLogin(); // Chama a função criaLogin para obter o token
+  let token =   await criaLogin(); // Chama a função criaLogin para obter o token
 
     // Agora você pode chamar a função obterToken ou usar o token em outros lugares
-    await getTasks();
+    await getTasks(token);
 }
 
 
