@@ -2,11 +2,13 @@ const getTask = require('../controllers/getTasks')
 const getCategories = require('../controllers/upProdCategories')
 const sendProducts = require('../controllers/upProd')
 const sendImages = require('../controllers/sendImages')
+const upSingleProduct = require('../controllers/updateSingleProduct')
+const newSingleProduct = require('../controllers/newSingleProduct')
 const express = require('express');
 const router = express.Router();
 
 // Carregar todas as tarefas no sistema Auvo
-router.get('/api/gettask', (req, res) => {
+router.get('/auvoapp/gettask', (req, res) => {
     getTask.iniciar(); // Executa a função iniciar apenas quando a rota for acessada
     res.send('Rota gettask executada com sucesso!');
 });
@@ -33,6 +35,18 @@ router.get('/api/gettask', (req, res) => {
 
 }); 
  */
+
+router.get('/auvoapp/updateproduct/:id', (req, res) => {
+    upSingleProduct.iniciar(req, res);
+    res.send('Executou a rota de update de produto')
+});
+
+
+router.get('/auvoapp/newproduct/:id', (req, res) => {
+    newSingleProduct.iniciar(req, res);
+    res.send('Executou a rota de novo produto')
+})
+
 
 
 module.exports = router;
