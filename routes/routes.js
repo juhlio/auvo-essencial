@@ -4,6 +4,8 @@ const sendProducts = require('../controllers/upProd')
 const sendImages = require('../controllers/sendImages')
 const upSingleProduct = require('../controllers/updateSingleProduct')
 const newSingleProduct = require('../controllers/newSingleProduct')
+const newSingleImage = require('../controllers/newSingleImage')
+const syncStock = require('../controllers/syncStock')
 const express = require('express');
 const router = express.Router();
 
@@ -47,6 +49,15 @@ router.get('/auvoapp/newproduct/:id', (req, res) => {
     res.send('Executou a rota de novo produto')
 })
 
+router.get('/auvoapp/newimage/:id', (req, res) => {
+    newSingleImage.iniciar(req, res);
+    res.send('Executou a rota de nova imagem')
+})
+
+router.get('/auvoapp/syncstock/:id', (req, res) => {
+    syncStock.iniciar(req, res);
+    res.send('Executou a rota de sincronização de estoque')
+})
 
 
 module.exports = router;
