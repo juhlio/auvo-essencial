@@ -17,7 +17,8 @@ const produtos = database.define('produtos', {
     ncm: Sequelize.STRING,
     unidadeMedida: Sequelize.STRING,
     localizacao: Sequelize.STRING,
-    idAuvo: Sequelize.INTEGER
+    idAuvo: Sequelize.INTEGER,
+    idRd: Sequelize.STRING,
 }, {
     timestamps: true, // Adiciona created_at e updated_at
     createdAt: 'created_at', // Personaliza o nome do campo created_at (opcional)
