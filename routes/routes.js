@@ -8,6 +8,7 @@ const newSingleImage = require('../controllers/newSingleImage')
 const syncStock = require('../controllers/syncStock')
 const newSingleCategory = require('../controllers/newSingleCategorie')
 const express = require('express');
+const getClients = require('../controllers/getClients')
 const router = express.Router();
 
 // Carregar todas as tarefas no sistema Auvo
@@ -64,6 +65,11 @@ router.get('/auvoapp/sendsinglecategory/:id', (req, res) => {
     newSingleCategory.iniciar(req, res);
     res.send('Executou a rota de nova categoria')
 })
+
+router.get('/auvoapp/getclients', (req, res) => {
+    getClients.iniciar(req, res);
+})
+
 
 
 module.exports = router;

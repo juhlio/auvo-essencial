@@ -17,8 +17,3 @@ app.listen(port, () => {
   console.log(`Servidor iniciado na porta ${port}`);
 });
 
-/* app.get('/auvoapp', (req, res) => {
-  getTask.iniciar(); // Executa a função iniciar apenas quando a rota for acessada
-  res.send('Rota gettask executada com sucesso!');
-});
- */
