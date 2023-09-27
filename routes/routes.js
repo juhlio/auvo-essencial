@@ -7,6 +7,7 @@ const newSingleProduct = require('../controllers/newSingleProduct')
 const newSingleImage = require('../controllers/newSingleImage')
 const syncStock = require('../controllers/syncStock')
 const newSingleCategory = require('../controllers/newSingleCategorie')
+const getGensets = require('../controllers/getGensets')
 const express = require('express');
 const getClients = require('../controllers/getClients')
 const router = express.Router();
@@ -66,9 +67,13 @@ router.get('/auvoapp/sendsinglecategory/:id', (req, res) => {
     res.send('Executou a rota de nova categoria')
 })
 
-router.get('/auvoapp/getclients', (req, res) => {
+/* router.get('/auvoapp/getclients', (req, res) => {
     getClients.iniciar(req, res);
 })
+
+router.get('/auvoapp/getgensets', (req, res) => {
+    getGensets.iniciar(req, res);
+}) */
 
 
 
