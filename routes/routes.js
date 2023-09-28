@@ -10,6 +10,7 @@ const newSingleCategory = require('../controllers/newSingleCategorie')
 const getGensets = require('../controllers/getGensets')
 const express = require('express');
 const getClients = require('../controllers/getClients')
+const getReports = require('../controllers/getReports')
 const router = express.Router();
 
 // Carregar todas as tarefas no sistema Auvo
@@ -75,6 +76,9 @@ router.get('/auvoapp/getgensets', (req, res) => {
     getGensets.iniciar(req, res);
 }) */
 
+router.get('/auvoapp/getreports', (req, res) => {
+    getReports.iniciar(req, res);
+})
 
 
 module.exports = router;
