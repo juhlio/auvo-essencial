@@ -9,6 +9,7 @@ const questionaries = database.define('questionaries', {
         primaryKey: true
     },
     taskId: Sequelize.INTEGER,
+    equipId: Sequelize.INTEGER,
     questionId: Sequelize.INTEGER,
     questionDescription: Sequelize.STRING,
     replyId: Sequelize.INTEGER,

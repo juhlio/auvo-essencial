@@ -60,6 +60,7 @@ async function getReports(token) {
                 let newQuestionarie = await questionaries.create({
                     taskId: taskId,
                     questionId: questionId,
+                    equipId: equipId,
                     questionDescription: questionDescription,
                     replyId: replyId,
                     reply: reply
