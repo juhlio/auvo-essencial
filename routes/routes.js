@@ -72,10 +72,11 @@ router.get('/auvoapp/sendsinglecategory/:id', (req, res) => {
     getClients.iniciar(req, res);
 })
 
+*/
+
 router.get('/auvoapp/getgensets', (req, res) => {
     getGensets.iniciar(req, res);
-}) */
-
+}) 
 router.get('/auvoapp/getreports', (req, res) => {
     getReports.iniciar(req, res);
 })

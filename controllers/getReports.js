@@ -3,16 +3,41 @@ require("dotenv").config();
 const criaLogin = require('./login.js');
 const tasks = require('../dbfiles/tasks.js');
 const questionaries = require('../dbfiles/questionaries.js');
+const semaphores = require('../dbfiles/semaphores.js')
 
 
 async function getReports(token) {
 
+    let agora = new Date();
+    // Subtrair 3 horas
+    agora.setHours(agora.getHours() - 3);
+    let dia = agora.getDate().toString().padStart(2, '0');
+    let mes = (agora.getMonth() + 1).toString().padStart(2, '0');
+    let ano = agora.getFullYear();
+/* 
+    let startDate = `${ano}-${mes}-${dia}`
+    let endDate = `${ano}-${mes}-${dia}`  */
+    let startDate = `2023-09-01`
+    let endDate = `2023-10-30` 
+  
+    
+   
+    let paramFilter = {
+        startDate: startDate,
+        endDate: endDate,
+       
+    };
+
+    let paramFilterString = JSON.stringify(paramFilter);
+
     let auvotoken = `Bearer ${token}`;
+
+    let url = `https://api.auvo.com.br/v2/tasks/?paramFilter=${paramFilterString}&PageSize=100`;
+
 
     const config = {
         method: 'GET',
-        url: `https://api.auvo.com.br/v2/tasks/?paramFilter={"startDate": "2023-09-01 T00:00:00",
-        "endDate": "2023-09-30T23:59:59", "type":"117976"}&PageSize=100`,
+        url: url,
         headers: {
             'Content-Type': 'application/json',
             'Authorization': auvotoken,
@@ -23,48 +48,111 @@ async function getReports(token) {
         const response = await axios(config);
         let reports = response.data.result.entityList;
 
-        console.log(reports[0])
 
+
+        //abre laço para trabalhar cada relatorio
         for (let report of reports) {
-            let taskId = report.taskID;
-            let clientId = report.customerId;
-            let type = report.taskTypeDescription;
 
-            let equipId = report.equipmentsId[0]
+            console.log(report)
 
+            //abre verificacao do tipo de tarefa e status finalizado
+            if (report.taskType == "117976" && report.taskStatus == '5') {
 
-            let newTask = await tasks.create({
-                auvoId: taskId,
-                clientId: clientId,
-                type: type,
-                equipId: equipId
-            })
+                let taskId = report.taskID;
+                let clientId = report.customerId;
+                let type = report.taskTypeDescription;
+                let obs = report.report
 
+                let equipId = report.equipmentsId[0]
 
 
-            let questionarie = report.questionnaires;
-            //pegar o ultimo questionaire
-            let lastQuestionarie = questionarie[questionarie.length - 1];
-            let answers = lastQuestionarie.answers;
-            
-
-
-            for (answer of answers) {
-
-                let questionId = answer.questionId;
-                let questionDescription = answer.questionDescription;
-                let replyId = answer.replyId;
-                let reply = answer.reply;
-
-
-                let newQuestionarie = await questionaries.create({
-                    taskId: taskId,
-                    questionId: questionId,
-                    equipId: equipId,
-                    questionDescription: questionDescription,
-                    replyId: replyId,
-                    reply: reply
+                let newTask = await tasks.create({
+                    auvoId: taskId,
+                    clientId: clientId,
+                    type: type,
+                    equipId: equipId
                 })
+
+
+
+                let questionarie = report.questionnaires;
+                //pegar o ultimo questionaire
+                let lastQuestionarie = questionarie[questionarie.length - 1];
+                let answers = lastQuestionarie.answers;
+
+
+
+                for (answer of answers) {
+
+                    let questionId = answer.questionId;
+                    let questionDescription = answer.questionDescription;
+                    let replyId = answer.replyId;
+                    let reply = answer.reply;
+
+
+                    let newQuestionarie = await questionaries.create({
+                        taskId: taskId,
+                        questionId: questionId,
+                        equipId: equipId,
+                        questionDescription: questionDescription,
+                        replyId: replyId,
+                        reply: reply
+                    })
+
+                    if (answer.questionDescription === 'Status geral do gerador') {
+
+                        if (equipId) {
+                            let deleteSemaphore = await semaphores.destroy({
+                                where: { equipId: equipId },
+                                limit: 1,
+                                order: [
+
+                                    ['created_at', 'DESC'],
+                                ]
+                            })
+
+                            let nomeEquip = ''
+                            //buscar a localicação do equipamento
+                            let buscaLocalizacao = {
+                                method: 'GET',
+                                url: `https://api.auvo.com.br/v2/equipments/${equipId}`,
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': auvotoken,
+                                },
+                            };
+                            try {
+                                let respostaLocalizacao = await axios(buscaLocalizacao);
+                                let specs = respostaLocalizacao.data.result.equipmentSpecifications;
+                                for (spec of specs) {
+                                    if (spec.name === 'TAG (Localizador)') {
+                                        nomeEquip = spec.specification
+                                    }
+                                }
+
+                            } catch (error) {
+
+                            }
+
+                            if (nomeEquip == '') {
+                                nomeEquip = 'G1'
+                            }
+
+                            let semaphore = await semaphores.create({
+                                taskId: taskId,
+                                equipId: equipId,
+                                nomeEquip: nomeEquip,
+                                questionId: questionId,
+                                questionDescription: questionDescription,
+                                replyId: replyId,
+                                reply: reply,
+                                obs: obs
+                            })
+                            //fecha verificação tipo de relatorio
+                        }
+
+                    }
+                }
 
                 //console.log(newQuestionarie)
 
@@ -72,57 +160,9 @@ async function getReports(token) {
 
 
 
+            //fecha o laço para verificação de cada relatorio
         }
 
-
-
-        /*    let taskId = reports[0].taskID;
-           let clientId = reports[0].customerId;
-           let type = reports[0].taskTypeDescription;
-   
-           console.log(`Id da Task => ${taskId}`);
-           console.log(`Id do Cliente => ${clientId}`);
-           console.log(`Tipo de Tarefa => ${type}`)
-   
-           let newTask = await tasks.create({
-               auvoId: taskId,
-               clientId: clientId,
-               type: type
-           })
-   
-           console.log(newTask) */
-
-
-        /* 
-        
-                let questionarie = reports[0].questionnaires;
-                //pegar o ultimo questionaire
-                let lastQuestionarie = questionarie[questionarie.length - 1];
-                let answers = lastQuestionarie.answers;
-                console.log(answers)
-        
-                for(answer of answers){
-                    let questionId = answer.questionId;
-                    let questionDescription = answer.questionDescription;
-                    let replyId = answer.replyId;
-                    let reply = answer.reply;
-        
-                    console.log(`Id da Pergunta => ${questionId}`);
-                    console.log(`Descrição da Pergunta => ${questionDescription}`);
-                    console.log(`Id da Resposta => ${replyId}`);
-                    console.log(`Resposta => ${reply}`);
-        
-                    let newQuestionarie = await questionaries.create({
-                        taskId: taskId,
-                        questionId: questionId,
-                        questionDescription: questionDescription,
-                        replyId: replyId,
-                        reply: reply
-                    })
-        
-                    console.log(newQuestionarie)
-        
-                } */
 
     } catch (error) {
         console.log(error);
@@ -134,12 +174,15 @@ async function getReports(token) {
 
 
 async function iniciar() {
+
     try {
         let token = await criaLogin(); // Chama a função criaLogin para obter o token
         await getReports(token);
     } catch (error) {
         console.log(error);
     }
+
+
 }
 
 
