@@ -11,6 +11,7 @@ const tasks = database.define('tasks', {
     auvoId: Sequelize.INTEGER,
     clientId: Sequelize.INTEGER,
     equipId: Sequelize.INTEGER,
+    typeId: Sequelize.INTEGER,
     type: Sequelize.STRING,
 }, {
     timestamps: true, // Adiciona created_at e updated_at

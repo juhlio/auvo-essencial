@@ -11,6 +11,7 @@ const getGensets = require('../controllers/getGensets')
 const express = require('express');
 const getClients = require('../controllers/getClients')
 const getReports = require('../controllers/getReports')
+const verClients = require('../controllers/verClients')
 const router = express.Router();
 
 // Carregar todas as tarefas no sistema Auvo
@@ -68,17 +69,21 @@ router.get('/auvoapp/sendsinglecategory/:id', (req, res) => {
     res.send('Executou a rota de nova categoria')
 })
 
-/* router.get('/auvoapp/getclients', (req, res) => {
+ router.get('/auvoapp/getclients', (req, res) => {
     getClients.iniciar(req, res);
 })
 
-*/
+
 
 router.get('/auvoapp/getgensets', (req, res) => {
     getGensets.iniciar(req, res);
 }) 
 router.get('/auvoapp/getreports', (req, res) => {
     getReports.iniciar(req, res);
+})
+
+router.get('/auvoapp/verifyclients', (req,res) => {
+    verClients.iniciar(req,res)
 })
 
 
