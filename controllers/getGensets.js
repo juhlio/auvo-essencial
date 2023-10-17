@@ -81,7 +81,7 @@ async function getGensets(token) {
 
 async function iniciar() {
   try {
-    let token = await criaLogin(); // Chama a função criaLogin para obter o token
+    let token = await criaLogin(); 
     await getGensets(token);
   } catch (error) {
     console.log(error);
