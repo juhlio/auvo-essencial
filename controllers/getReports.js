@@ -15,8 +15,9 @@ async function getReports(token) {
 
   let startDate = `${ano}-${mes}-${dia}`;
   let endDate = `${ano}-${mes}-${dia}`;
-  /*  let startDate = `2023-10-16`;
-  let endDate = `2023-10-18`; */
+  
+  /*  let startDate = `2023-10-01`;
+  let endDate = `2023-10-30`; */
 
   let paramFilter = {
     startDate: startDate,
@@ -44,8 +45,6 @@ async function getReports(token) {
 
     //abre laço para trabalhar cada relatorio
     for (let report of reports) {
-      console.log(report);
-
       //abre verificacao do tipo de tarefa e status finalizado
       if (report.taskStatus == "5") {
         let taskId = report.taskID;
@@ -56,83 +55,91 @@ async function getReports(token) {
 
         let equipId = report.equipmentsId[0];
 
-        //cria a nova task no bd
-        let newTask = await tasks.create({
-          auvoId: taskId,
-          clientId: clientId,
-          typeId: taskType,
-          type: type,
-          equipId: equipId,
+        let verifyTask = await tasks.findAll({
+          where: {
+            auvoId: taskId,
+          },
         });
 
-        let questionarie = report.questionnaires;
-        //pegar o ultimo questionaire
-        let lastQuestionarie = questionarie[questionarie.length - 1];
-        let answers = lastQuestionarie.answers;
-
-        //salva as respostas no banco
-        for (answer of answers) {
-          let questionId = answer.questionId;
-          let questionDescription = answer.questionDescription;
-          let replyId = answer.replyId;
-          let reply = answer.reply;
-
-          let newQuestionarie = await questionaries.create({
-            taskId: taskId,
-            questionId: questionId,
+        if (verifyTask.length === 0) {
+          //cria a nova task no bd
+          let newTask = await tasks.create({
+            auvoId: taskId,
+            clientId: clientId,
+            typeId: taskType,
+            type: type,
             equipId: equipId,
-            questionDescription: questionDescription,
-            replyId: replyId,
-            reply: reply,
           });
 
-          //salva resposta na tabela do semaforo
-          if (
-            answer.questionDescription === "Status geral do gerador" ||
-            answer.questionDescription === "STATUS GERAL DO GRUPO GERADOR"
-          ) {
-            if (equipId) {
-              let deleteSemaphore = await semaphores.destroy({
-                where: { equipId: equipId },
-                limit: 1,
-                order: [["created_at", "DESC"]],
-              });
+          let questionarie = report.questionnaires;
+          //pegar o ultimo questionaire
+          let lastQuestionarie = questionarie[questionarie.length - 1];
+          let answers = lastQuestionarie.answers;
 
-              let nomeEquip = "";
-              //buscar a localicação do equipamento
-              let buscaLocalizacao = {
-                method: "GET",
-                url: `https://api.auvo.com.br/v2/equipments/${equipId}`,
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: auvotoken,
-                },
-              };
-              try {
-                let respostaLocalizacao = await axios(buscaLocalizacao);
-                let specs =
-                  respostaLocalizacao.data.result.equipmentSpecifications;
-                for (spec of specs) {
-                  if (spec.name === "TAG (Localizador)") {
-                    nomeEquip = spec.specification;
+          //salva as respostas no banco
+          for (answer of answers) {
+            let questionId = answer.questionId;
+            let questionDescription = answer.questionDescription;
+            let replyId = answer.replyId;
+            let reply = answer.reply;
+
+            let newQuestionarie = await questionaries.create({
+              taskId: taskId,
+              questionId: questionId,
+              equipId: equipId,
+              questionDescription: questionDescription,
+              replyId: replyId,
+              reply: reply,
+            });
+
+            //salva resposta na tabela do semaforo
+            if (
+              answer.questionDescription === "Status geral do gerador" ||
+              answer.questionDescription === "STATUS GERAL DO GRUPO GERADOR"
+            ) {
+              if (equipId) {
+                let deleteSemaphore = await semaphores.destroy({
+                  where: { equipId: equipId },
+                  limit: 1,
+                  order: [["created_at", "DESC"]],
+                });
+
+                let nomeEquip = "";
+                //buscar a localicação do equipamento
+                let buscaLocalizacao = {
+                  method: "GET",
+                  url: `https://api.auvo.com.br/v2/equipments/${equipId}`,
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: auvotoken,
+                  },
+                };
+                try {
+                  let respostaLocalizacao = await axios(buscaLocalizacao);
+                  let specs =
+                    respostaLocalizacao.data.result.equipmentSpecifications;
+                  for (spec of specs) {
+                    if (spec.name === "TAG (Localizador)") {
+                      nomeEquip = spec.specification;
+                    }
                   }
+                } catch (error) {}
+
+                if (nomeEquip == "") {
+                  nomeEquip = "G1";
                 }
-              } catch (error) {}
 
-              if (nomeEquip == "") {
-                nomeEquip = "G1";
+                let semaphore = await semaphores.create({
+                  taskId: taskId,
+                  equipId: equipId,
+                  nomeEquip: nomeEquip,
+                  questionId: questionId,
+                  questionDescription: questionDescription,
+                  replyId: replyId,
+                  reply: reply,
+                  obs: obs,
+                });
               }
-
-              let semaphore = await semaphores.create({
-                taskId: taskId,
-                equipId: equipId,
-                nomeEquip: nomeEquip,
-                questionId: questionId,
-                questionDescription: questionDescription,
-                replyId: replyId,
-                reply: reply,
-                obs: obs,
-              });
             }
           }
         }
