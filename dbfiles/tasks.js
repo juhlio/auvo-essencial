@@ -13,6 +13,7 @@ const tasks = database.define('tasks', {
     equipId: Sequelize.INTEGER,
     typeId: Sequelize.INTEGER,
     type: Sequelize.STRING,
+    obs: Sequelize.STRING,
 }, {
     timestamps: true, // Adiciona created_at e updated_at
     createdAt: 'created_at', // Personaliza o nome do campo created_at (opcional)

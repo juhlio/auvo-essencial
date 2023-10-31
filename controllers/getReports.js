@@ -13,11 +13,12 @@ async function getReports(token) {
   let mes = (agora.getMonth() + 1).toString().padStart(2, "0");
   let ano = agora.getFullYear();
 
-  let startDate = `${ano}-${mes}-${dia}`;
+  /*   let startDate = `${ano}-${mes}-${dia}`;
   let endDate = `${ano}-${mes}-${dia}`;
-  
-  /*  let startDate = `2023-10-01`;
-  let endDate = `2023-10-30`; */
+   */
+
+  let startDate = `2023-10-26`;
+  let endDate = `2023-10-31`;
 
   let paramFilter = {
     startDate: startDate,
@@ -55,12 +56,14 @@ async function getReports(token) {
 
         let equipId = report.equipmentsId[0];
 
+        //Busca no banco a tarefa
         let verifyTask = await tasks.findAll({
           where: {
             auvoId: taskId,
           },
         });
 
+        //Verifica se a tarefa ja existe
         if (verifyTask.length === 0) {
           //cria a nova task no bd
           let newTask = await tasks.create({
@@ -69,6 +72,7 @@ async function getReports(token) {
             typeId: taskType,
             type: type,
             equipId: equipId,
+            obs: obs,
           });
 
           let questionarie = report.questionnaires;
@@ -144,8 +148,6 @@ async function getReports(token) {
           }
         }
       }
-
-      //fecha o laço para verificação de cada relatorio
     }
   } catch (error) {
     console.log(error);
