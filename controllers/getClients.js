@@ -31,9 +31,44 @@ async function getClients(token, req, res) {
         for (let item of clientes) {
             console.log(`Esse é o CNPJ => ${item.cpfCnpj}`)
             console.log(`Esse é o ID => ${item.id}`)
+
             let idAuvocliente = item.id
             let cnpj = item.cpfCnpj
-            clients.update({ idAuvo: idAuvocliente }, { where: { cnpjFormatado: cnpj } })
+            let cnpjOriginal = item.cpfCnpj.toString().replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+            console.log(cnpjOriginal)
+            let verClient = await clients.findAll({
+                where: {
+                    idAuvo: idAuvocliente
+                }
+            })
+        
+            if (verClient.length === 0) {
+
+                //busca pelo cnpj
+                let verCnpj = await clients.findAll({
+                    where: {
+                        cnpjFormatado: cnpj
+                    }
+                })
+                
+                if (verCnpj.length > 0 ){
+                    clients.update({ idAuvo: idAuvocliente }, { where: { cnpjFormatado: cnpj } })
+                }else{
+                    
+                    clients.create({
+                        razaoSocial: item.description,
+                        nome: item.description,
+                        CNPJ: cnpjOriginal,
+                        cnpjFormatado: cnpj,
+                        endereco: item.address,
+                        idAuvo: idAuvocliente
+                        
+                    })
+
+                }
+
+                
+            }
         }
 
 

@@ -6,6 +6,7 @@ const categories = database.define('clients', {
         type: Sequelize.INTEGER,
         allowNull: false,
         primaryKey: true,
+        autoIncrement: true,
     },
     razaoSocial: {
         type: Sequelize.STRING(512),
