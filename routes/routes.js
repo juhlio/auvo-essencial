@@ -12,6 +12,7 @@ const express = require('express');
 const getClients = require('../controllers/getClients')
 const getReports = require('../controllers/getReports')
 const upGenset = require('../controllers/upGenset')
+const resumeReports = require('../controllers/resumeReports')
 const router = express.Router();
 
 // Carregar todas as tarefas no sistema Auvo
@@ -86,5 +87,8 @@ router.get('/auvoapp/upgensets', (req, res) => {
     upGenset.iniciar(req,res)
 })
 
+router.get('/auvoapp/resumereports', (req, res) =>{
+    resumeReports.iniciar(req, res)
+})
 
 module.exports = router;
