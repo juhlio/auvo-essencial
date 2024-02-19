@@ -12,6 +12,7 @@ const express = require("express");
 const getClients = require("../controllers/getClients");
 const getReports = require("../controllers/getReports");
 const upGenset = require("../controllers/upGenset");
+const reviwClients = require("../controllers/reviewClients");
 const router = express.Router();
 
 // Carregar todas as tarefas no sistema Auvo
@@ -80,6 +81,10 @@ router.get("/auvoapp/getreports", (req, res) => {
 
 router.get("/auvoapp/upgensets", (req, res) => {
   upGenset.iniciar(req, res);
+});
+
+router.get("/auvoapp/clientreview", (req, res) => {
+  reviwClients.iniciar(req, res);
 });
 
 module.exports = router;

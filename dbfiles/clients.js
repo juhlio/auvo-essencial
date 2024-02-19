@@ -22,7 +22,7 @@ const categories = database.define('clients', {
     },
     cnpjFormatado: {
         type: Sequelize.STRING(50),
-        allowNull: false,
+        defaultValue: null,
     },
     classificacao: {
         type: Sequelize.STRING(512),
