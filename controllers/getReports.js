@@ -19,7 +19,7 @@ async function getReports(token) {
 
   let startDate = `2023-11-16`;
   let endDate = `2023-11-17`;
-6
+
   let paramFilter = {
     startDate: startDate,
     endDate: endDate,

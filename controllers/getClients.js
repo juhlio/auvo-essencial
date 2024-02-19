@@ -26,7 +26,7 @@ async function getClients(token, req, res) {
 
 
         let clientes = response.data.result.entityList;
-        console.log(clientes)
+        /* console.log(clientes) */
 
         for (let item of clientes) {
             console.log(`Esse é o CNPJ => ${item.cpfCnpj}`)
@@ -36,25 +36,29 @@ async function getClients(token, req, res) {
             let cnpj = item.cpfCnpj
             let cnpjOriginal = item.cpfCnpj.toString().replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
             
+            //procura no bd com base no id auvo
             let verClient = await clients.findAll({
                 where: {
                     idAuvo: idAuvocliente
                 }
             })
-        
+            
+            //verifica se achou com o id auvo
             if (verClient.length < 1) {
 
-                //busca pelo cnpj
+                //caso nao tenha achado faz uma busca pelo cnpj
                 let verCnpj = await clients.findAll({
                     where: {
                         cnpjFormatado: cnpj
                     }
                 })
+
                 
                 if (verCnpj.length > 0 ){
+                    //acho com o cnpj, atualiza com o id auvo
                     clients.update({ idAuvo: idAuvocliente }, { where: { cnpjFormatado: cnpj } })
                 }else{
-                    
+                    //não achou nada... vai cadastrar tudo
                     clients.create({
                         razaoSocial: item.description,
                         nome: item.description,

@@ -1,24 +1,23 @@
-const getTask = require('../controllers/getTasks')
-const getCategories = require('../controllers/upProdCategories')
-const sendProducts = require('../controllers/upProd')
-const sendImages = require('../controllers/sendImages')
-const upSingleProduct = require('../controllers/updateSingleProduct')
-const newSingleProduct = require('../controllers/newSingleProduct')
-const newSingleImage = require('../controllers/newSingleImage')
-const syncStock = require('../controllers/syncStock')
-const newSingleCategory = require('../controllers/newSingleCategorie')
-const getGensets = require('../controllers/getGensets')
-const express = require('express');
-const getClients = require('../controllers/getClients')
-const getReports = require('../controllers/getReports')
-const upGenset = require('../controllers/upGenset')
-const resumeReports = require('../controllers/resumeReports')
+const getTask = require("../controllers/getTasks");
+const getCategories = require("../controllers/upProdCategories");
+const sendProducts = require("../controllers/upProd");
+const sendImages = require("../controllers/sendImages");
+const upSingleProduct = require("../controllers/updateSingleProduct");
+const newSingleProduct = require("../controllers/newSingleProduct");
+const newSingleImage = require("../controllers/newSingleImage");
+const syncStock = require("../controllers/syncStock");
+const newSingleCategory = require("../controllers/newSingleCategorie");
+const getGensets = require("../controllers/getGensets");
+const express = require("express");
+const getClients = require("../controllers/getClients");
+const getReports = require("../controllers/getReports");
+const upGenset = require("../controllers/upGenset");
 const router = express.Router();
 
 // Carregar todas as tarefas no sistema Auvo
-router.get('/auvoapp/gettask', (req, res) => {
-    getTask.iniciar(); // Executa a função iniciar apenas quando a rota for acessada
-    res.send('Rota gettask executada com sucesso!');
+router.get("/auvoapp/gettask", (req, res) => {
+  getTask.iniciar(); // Executa a função iniciar apenas quando a rota for acessada
+  res.send("Rota gettask executada com sucesso!");
 });
 
 //Listagem das categorias de produtos no sistema Auvo.
@@ -35,7 +34,6 @@ router.get('/auvoapp/gettask', (req, res) => {
 
 }); */
 
-
 //Envio de imagens para o sistema auvo. Primeira carga apenas
 /* router.get('/api/enviaimagens', (req, res)=> {
     sendImages.iniciar();
@@ -44,51 +42,44 @@ router.get('/auvoapp/gettask', (req, res) => {
 }); 
  */
 
-router.get('/auvoapp/updateproduct/:id', (req, res) => {
-    upSingleProduct.iniciar(req, res);
-    res.send('Executou a rota de update de produto')
+router.get("/auvoapp/updateproduct/:id", (req, res) => {
+  upSingleProduct.iniciar(req, res);
+  res.send("Executou a rota de update de produto");
 });
 
+router.get("/auvoapp/newproduct/:id", (req, res) => {
+  newSingleProduct.iniciar(req, res);
+  res.send("Executou a rota de novo produto");
+});
 
-router.get('/auvoapp/newproduct/:id', (req, res) => {
-    newSingleProduct.iniciar(req, res);
-    res.send('Executou a rota de novo produto')
-})
+router.get("/auvoapp/newimage/:id", (req, res) => {
+  newSingleImage.iniciar(req, res);
+  res.send("Executou a rota de nova imagem");
+});
 
-router.get('/auvoapp/newimage/:id', (req, res) => {
-    newSingleImage.iniciar(req, res);
-    res.send('Executou a rota de nova imagem')
-})
+router.get("/auvoapp/syncstock/:id", (req, res) => {
+  syncStock.iniciar(req, res);
+  res.send("Executou a rota de sincronização de estoque");
+});
 
-router.get('/auvoapp/syncstock/:id', (req, res) => {
-    syncStock.iniciar(req, res);
-    res.send('Executou a rota de sincronização de estoque')
-})
+router.get("/auvoapp/sendsinglecategory/:id", (req, res) => {
+  newSingleCategory.iniciar(req, res);
+  res.send("Executou a rota de nova categoria");
+});
 
-router.get('/auvoapp/sendsinglecategory/:id', (req, res) => {
-    newSingleCategory.iniciar(req, res);
-    res.send('Executou a rota de nova categoria')
-})
+router.get("/auvoapp/getclients", (req, res) => {
+  getClients.iniciar(req, res);
+});
 
- router.get('/auvoapp/getclients', (req, res) => {
-    getClients.iniciar(req, res);
-})
+router.get("/auvoapp/getgensets", (req, res) => {
+  getGensets.iniciar(req, res);
+});
+router.get("/auvoapp/getreports", (req, res) => {
+  getReports.iniciar(req, res);
+});
 
-
-
-router.get('/auvoapp/getgensets', (req, res) => {
-    getGensets.iniciar(req, res);
-}) 
-router.get('/auvoapp/getreports', (req, res) => {
-    getReports.iniciar(req, res);
-})
-
-router.get('/auvoapp/upgensets', (req, res) => {
-    upGenset.iniciar(req,res)
-})
-
-router.get('/auvoapp/resumereports', (req, res) =>{
-    resumeReports.iniciar(req, res)
-})
+router.get("/auvoapp/upgensets", (req, res) => {
+  upGenset.iniciar(req, res);
+});
 
 module.exports = router;
