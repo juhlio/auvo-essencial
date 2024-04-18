@@ -13,11 +13,17 @@ const getClients = require("../controllers/getClients");
 const getReports = require("../controllers/getReports");
 const upGenset = require("../controllers/upGenset");
 const reviwClients = require("../controllers/reviewClients");
+const getOs = require("../controllers/getOs");
 const router = express.Router();
 
 // Carregar todas as tarefas no sistema Auvo
 router.get("/auvoapp/gettask", (req, res) => {
   getTask.iniciar(); // Executa a função iniciar apenas quando a rota for acessada
+  res.send("Rota gettask executada com sucesso!");
+});
+
+router.get("/auvoapp/getos", (req, res) => {
+  getOs.iniciar(); // Executa a função iniciar apenas quando a rota for acessada
   res.send("Rota gettask executada com sucesso!");
 });
 

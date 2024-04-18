@@ -7,7 +7,7 @@ async function getTasks(token) {
 
     const config = {
         method: 'GET',
-        url: `https://api.auvo.com.br/v2/tasks/?paramFilter={"startDate": "2023-07-01T00:00:00","endDate":"2023-07-30T00:00:00"}&pagSize=20&page=1`,
+        url: `https://api.auvo.com.br/v2/tasks/?paramFilter={"startDate": "2024-04-18T00:00:00","endDate":"2024-04-18T00:00:00"}&pagSize=20&page=1`,
         headers: {
             'Content-Type': 'application/json',
             'Authorization': auvotoken,

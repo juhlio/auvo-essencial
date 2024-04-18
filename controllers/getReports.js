@@ -53,6 +53,7 @@ async function getReports(token) {
         let type = report.taskTypeDescription;
         let obs = report.report;
         let taskType = report.taskType;
+        let osUrl = report.taskUrl;
 
         let equipId = report.equipmentsId[0];
 
@@ -73,6 +74,7 @@ async function getReports(token) {
             type: type,
             equipId: equipId,
             obs: obs,
+            osUrl: osUrl,
           });
 
           let questionarie = report.questionnaires;
