@@ -7,18 +7,16 @@ const semaphores = require("../dbfiles/semaphores.js");
 
 async function getReports(token) {
   let agora = new Date();
-  // Subtrair 3 horas
   agora.setHours(agora.getHours() - 3);
   let dia = agora.getDate().toString().padStart(2, "0");
   let mes = (agora.getMonth() + 1).toString().padStart(2, "0");
   let ano = agora.getFullYear();
 
-  /*   let startDate = `${ano}-${mes}-${dia}`;
-  let endDate = `${ano}-${mes}-${dia}`;
-   */
+  /* let startDate = `2023-11-16`;
+  let endDate = `2023-11-17`; */
 
-  let startDate = `2023-11-16`;
-  let endDate = `2023-11-17`;
+  let startDate = `${ano}-${mes}-${dia}`;
+  let endDate = `${ano}-${mes}-${dia}`;
 
   let paramFilter = {
     startDate: startDate,
@@ -29,11 +27,11 @@ async function getReports(token) {
 
   let auvotoken = `Bearer ${token}`;
 
-  let url = `https://api.auvo.com.br/v2/tasks/?paramFilter=${paramFilterString}&PageSize=100`;
+  let endpoint = `https://api.auvo.com.br/v2/tasks/?paramFilter=${paramFilterString}&PageSize=100`;
 
   const config = {
     method: "GET",
-    url: url,
+    url: endpoint,
     headers: {
       "Content-Type": "application/json",
       Authorization: auvotoken,
@@ -44,9 +42,7 @@ async function getReports(token) {
     const response = await axios(config);
     let reports = response.data.result.entityList;
 
-    //abre laço para trabalhar cada relatorio
     for (let report of reports) {
-      //abre verificacao do tipo de tarefa e status finalizado
       if (report.taskStatus == "5") {
         let taskId = report.taskID;
         let clientId = report.customerId;
@@ -54,19 +50,17 @@ async function getReports(token) {
         let obs = report.report;
         let taskType = report.taskType;
         let osUrl = report.taskUrl;
-
         let equipId = report.equipmentsId[0];
 
-        //Busca no banco a tarefa
         let verifyTask = await tasks.findAll({
           where: {
             auvoId: taskId,
           },
         });
 
-        //Verifica se a tarefa ja existe
+        console.log(verifyTask);
+
         if (verifyTask.length === 0) {
-          //cria a nova task no bd
           let newTask = await tasks.create({
             auvoId: taskId,
             clientId: clientId,
@@ -77,13 +71,13 @@ async function getReports(token) {
             osUrl: osUrl,
           });
 
+          console.log(newTask);
+
           let questionarie = report.questionnaires;
-          //pegar o ultimo questionaire
           let lastQuestionarie = questionarie[questionarie.length - 1];
           let answers = lastQuestionarie.answers;
 
-          //salva as respostas no banco
-          for (answer of answers) {
+          for (let answer of answers) {
             let questionId = answer.questionId;
             let questionDescription = answer.questionDescription;
             let replyId = answer.replyId;
@@ -98,7 +92,6 @@ async function getReports(token) {
               reply: reply,
             });
 
-            //salva resposta na tabela do semaforo
             if (
               answer.questionDescription === "Status geral do gerador" ||
               answer.questionDescription === "STATUS GERAL DO GRUPO GERADOR"
@@ -111,7 +104,6 @@ async function getReports(token) {
                 });
 
                 let nomeEquip = "";
-                //buscar a localicação do equipamento
                 let buscaLocalizacao = {
                   method: "GET",
                   url: `https://api.auvo.com.br/v2/equipments/${equipId}`,
@@ -124,7 +116,8 @@ async function getReports(token) {
                   let respostaLocalizacao = await axios(buscaLocalizacao);
                   let specs =
                     respostaLocalizacao.data.result.equipmentSpecifications;
-                  for (spec of specs) {
+                  for (let spec of specs) {
+                    // Adicionado "let" antes de "spec"
                     if (spec.name === "TAG (Localizador)") {
                       nomeEquip = spec.specification;
                     }
@@ -158,7 +151,7 @@ async function getReports(token) {
 
 async function iniciar() {
   try {
-    let token = await criaLogin(); // Chama a função criaLogin para obter o token
+    let token = await criaLogin();
     await getReports(token);
   } catch (error) {
     console.log(error);

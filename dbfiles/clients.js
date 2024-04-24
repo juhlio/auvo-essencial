@@ -64,6 +64,10 @@ const categories = database.define('clients', {
         type: Sequelize.INTEGER,
         defaultValue: null,
     },
+    groups: {
+        type: Sequelize.INTEGER,
+        defaultValue: null,
+    },
     created_at: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),

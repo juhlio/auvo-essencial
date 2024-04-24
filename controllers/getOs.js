@@ -7,9 +7,13 @@ async function getOs(token) {
 
     let auvotoken = `Bearer ${token}`;
 
-    let jobs = await tasks.findAll();
+    let jobs = await tasks.findAll({
+        where: {
+            osurl: null
+        }
+    });
 
-    
+    console.log(jobs)
 
     for (let job of jobs){
 
@@ -42,8 +46,8 @@ async function getOs(token) {
 }
 
 async function iniciar() {
-  let token =   await criaLogin(); // Chama a função criaLogin para obter o token
 
+  let token =   await criaLogin(); // Chama a função criaLogin para obter o token
     // Agora você pode chamar a função obterToken ou usar o token em outros lugares
     await getOs(token);
 }

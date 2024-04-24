@@ -14,6 +14,7 @@ const getReports = require("../controllers/getReports");
 const upGenset = require("../controllers/upGenset");
 const reviwClients = require("../controllers/reviewClients");
 const getOs = require("../controllers/getOs");
+const upClients = require("../controllers/upClients");
 const router = express.Router();
 
 // Carregar todas as tarefas no sistema Auvo
@@ -22,9 +23,10 @@ router.get("/auvoapp/gettask", (req, res) => {
   res.send("Rota gettask executada com sucesso!");
 });
 
-router.get("/auvoapp/getos", (req, res) => {
-  getOs.iniciar(); // Executa a função iniciar apenas quando a rota for acessada
-  res.send("Rota gettask executada com sucesso!");
+
+router.get("/auvoapp/upclients", (req, res) => {
+  upClients.iniciar(); // Executa a função iniciar apenas quando a rota for acessada
+  res.send("Rota upClients executada com sucesso!");
 });
 
 //Listagem das categorias de produtos no sistema Auvo.
@@ -92,5 +94,11 @@ router.get("/auvoapp/upgensets", (req, res) => {
 router.get("/auvoapp/clientreview", (req, res) => {
   reviwClients.iniciar(req, res);
 });
+
+router.get("/auvoapp/getos", (req, res) => {
+  getOs.iniciar(); // Executa a função iniciar apenas quando a rota for acessada
+  res.send("Rota getos executada com sucesso!");
+});
+
 
 module.exports = router;
