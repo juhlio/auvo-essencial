@@ -42,7 +42,10 @@ async function getReports(token) {
     const response = await axios(config);
     let reports = response.data.result.entityList;
 
+
     for (let report of reports) {
+
+      console.log(report)
       if (report.taskStatus == "5") {
         let taskId = report.taskID;
         let clientId = report.customerId;
@@ -51,6 +54,7 @@ async function getReports(token) {
         let taskType = report.taskType;
         let osUrl = report.taskUrl;
         let equipId = report.equipmentsId[0];
+        let taskDate = report.taskDate;
 
         let verifyTask = await tasks.findAll({
           where: {
@@ -69,6 +73,7 @@ async function getReports(token) {
             equipId: equipId,
             obs: obs,
             osUrl: osUrl,
+            taskDate: taskDate,
           });
 
           console.log(newTask);

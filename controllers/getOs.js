@@ -9,7 +9,7 @@ async function getOs(token) {
 
     let jobs = await tasks.findAll({
         where: {
-            osurl: null
+            taskDate: null
         }
     });
 
@@ -29,9 +29,9 @@ async function getOs(token) {
 
         try {
             const response = await axios(config);
-            console.log(response.data.result.taskUrl);
+            console.log(response.data.result);
 
-            await job.update({ osurl: response.data.result.taskUrl });
+            await job.update({ taskDate: response.data.result.taskDate });
 
 
             
