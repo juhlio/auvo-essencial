@@ -16,6 +16,7 @@ const tasks = database.define('tasks', {
     obs: Sequelize.STRING,
     osurl: Sequelize.STRING,
     taskDate: Sequelize.DATE,
+    taskStatus: Sequelize.STRING
 }, {
     timestamps: true, // Adiciona created_at e updated_at
     createdAt: 'created_at', // Personaliza o nome do campo created_at (opcional)

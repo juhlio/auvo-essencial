@@ -16,13 +16,15 @@ const reviwClients = require("../controllers/reviewClients");
 const getOs = require("../controllers/getOs");
 const upClients = require("../controllers/upClients");
 const getReportId = require("../controllers/getReportId");
+const getReportsByDate = require("../controllers/getTasks");
+const reviewTasks = require("../controllers/reviewTasks");
 const router = express.Router();
 
 // Carregar todas as tarefas no sistema Auvo
-router.get("/auvoapp/gettask", (req, res) => {
+ router.get("/auvoapp/gettask", (req, res) => {
   getTask.iniciar(); // Executa a função iniciar apenas quando a rota for acessada
   res.send("Rota gettask executada com sucesso!");
-});
+}); 
 
 
 router.get("/auvoapp/upclients", (req, res) => {
@@ -107,5 +109,10 @@ router.get("/auvoapp/getreportid/:id", (req, res) => {
   res.send("Rota getReportId executada com sucesso!");
 });
 
+/* router.get("/auvoapp/reviewtasks", (req,res) =>{
+  reviewTasks.iniciar();
+  res.send("Review Tasks Iniciada")
+})
+ */
 
 module.exports = router;

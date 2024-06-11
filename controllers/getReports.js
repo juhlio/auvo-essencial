@@ -12,9 +12,7 @@ async function getReports(token) {
   let mes = (agora.getMonth() + 1).toString().padStart(2, "0");
   let ano = agora.getFullYear();
 
-  /* let startDate = `2023-11-16`;
-  let endDate = `2023-11-17`; */
-
+  
   let startDate = `${ano}-${mes}-${dia}`;
   let endDate = `${ano}-${mes}-${dia}`;
 
@@ -45,7 +43,6 @@ async function getReports(token) {
 
     for (let report of reports) {
 
-      console.log(report)
       if (report.taskStatus == "5") {
         let taskId = report.taskID;
         let clientId = report.customerId;
@@ -64,89 +61,44 @@ async function getReports(token) {
 
         console.log(verifyTask);
 
-        if (verifyTask.length === 0) {
-          let newTask = await tasks.create({
-            auvoId: taskId,
-            clientId: clientId,
-            typeId: taskType,
-            type: type,
-            equipId: equipId,
-            obs: obs,
-            osUrl: osUrl,
-            taskDate: taskDate,
-          });
-
-          console.log(newTask);
-
           let questionarie = report.questionnaires;
           let lastQuestionarie = questionarie[questionarie.length - 1];
           let answers = lastQuestionarie.answers;
+          let idVerQuestion = answers[1].questionId;
 
-          for (let answer of answers) {
-            let questionId = answer.questionId;
-            let questionDescription = answer.questionDescription;
-            let replyId = answer.replyId;
-            let reply = answer.reply;
-
-            let newQuestionarie = await questionaries.create({
-              taskId: taskId,
-              questionId: questionId,
-              equipId: equipId,
-              questionDescription: questionDescription,
-              replyId: replyId,
-              reply: reply,
-            });
-
-            if (
-              answer.questionDescription === "Status geral do gerador" ||
-              answer.questionDescription === "STATUS GERAL DO GRUPO GERADOR"
-            ) {
-              if (equipId) {
-                let deleteSemaphore = await semaphores.destroy({
-                  where: { equipId: equipId },
-                  limit: 1,
-                  order: [["created_at", "DESC"]],
-                });
-
-                let nomeEquip = "";
-                let buscaLocalizacao = {
-                  method: "GET",
-                  url: `https://api.auvo.com.br/v2/equipments/${equipId}`,
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: auvotoken,
-                  },
-                };
-                try {
-                  let respostaLocalizacao = await axios(buscaLocalizacao);
-                  let specs =
-                    respostaLocalizacao.data.result.equipmentSpecifications;
-                  for (let spec of specs) {
-                    // Adicionado "let" antes de "spec"
-                    if (spec.name === "TAG (Localizador)") {
-                      nomeEquip = spec.specification;
-                    }
-                  }
-                } catch (error) {}
-
-                if (nomeEquip == "") {
-                  nomeEquip = "G1";
-                }
-
-                let semaphore = await semaphores.create({
-                  taskId: taskId,
-                  equipId: equipId,
-                  nomeEquip: nomeEquip,
-                  questionId: questionId,
-                  questionDescription: questionDescription,
-                  replyId: replyId,
-                  reply: reply,
-                  obs: obs,
-                });
-              }
+          let verifyQuestion = await questionaries.findAll({
+            where: {
+              questionId: idVerQuestion
             }
+          })
+
+          if (verifyQuestion.length === 0) {
+
+            for (let answer of answers) {
+              let questionId = answer.questionId;
+              let questionDescription = answer.questionDescription;
+              let replyId = answer.replyId;
+              let reply = answer.reply;
+  
+              let newQuestionarie = await questionaries.create({
+                taskId: taskId,
+                questionId: questionId,
+                equipId: equipId,
+                questionDescription: questionDescription,
+                replyId: replyId,
+                reply: reply,
+              });
+
+              console.log(`Questionario salvo no BD`)
+  
+            }
+
+            
+          } else {
+            console.log(`Ja exists`)
           }
-        }
+
+        
       }
     }
   } catch (error) {

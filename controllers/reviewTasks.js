@@ -4,23 +4,22 @@ const criaLogin = require("./login.js");
 const tasks = require("../dbfiles/tasks.js");
 
 
-async function getReports(token, initDate) {
-  let lastDate = parseInt(initDate) + 5;
+async function getReports(token, startDate) {
+  
 
   let agora = new Date();
   agora.setHours(agora.getHours() - 3);
-
   let dia = agora.getDate().toString().padStart(2, "0");
   let mes = (agora.getMonth() + 1).toString().padStart(2, "0");
   let ano = agora.getFullYear();
 
-  let startDate = `${ano}-${mes}-${dia}`;
-  //let startDate = `2024-05-25`;
+  //let startDate = `${ano}-${mes}-${dia}`;
+  
 
   let paramFilter = {
-    startDate: `${ano}-01-01`,
-    endDate: `${ano}-12-31`,
-    dateLastUpdate: `${startDate}`,
+    startDate: `${startDate}`,
+    endDate: `${startDate}`,
+    //dateLastUpdate: `${startDate}`,
   };
 
   let paramFilterString = JSON.stringify(paramFilter);
@@ -102,10 +101,40 @@ async function getReports(token, initDate) {
   }
 }
 
+function generateDatesUntilNextYear() {
+  let dates = [];
+
+  let today = new Date();
+  let currentYear = today.getFullYear();
+  let lastYear = currentYear - 1;
+  let nextYear = currentYear + 1;
+
+  for (let year = lastYear; year <= nextYear; year++) {
+      for (let month = 0; month < 12; month++) {
+          for (let day = 1; day <= 31; day++) {
+              let dateString = `${year}-${month + 1}-${day.toString().padStart(2, '0')}`;
+              dates.push(dateString);
+          }
+      }
+  }
+  console.log(dates)
+  return dates;
+}
+
+
+
+
+
+
 async function iniciar() {
   try {
     let token = await criaLogin();
-    await getReports(token);
+    let dates = await generateDatesUntilNextYear();
+     for (date of dates){
+      await getReports(token, date);
+    }  
+
+
   } catch (error) {
     console.log(error);
   }
