@@ -3,7 +3,7 @@ require("dotenv").config();
 const criaLogin = require("./login.js");
 const tasks = require("../dbfiles/tasks.js");
 const questionaries = require("../dbfiles/questionaries.js");
-const semaphores = require("../dbfiles/semaphores.js");
+
 
 async function getReports(token) {
   let agora = new Date();
@@ -52,27 +52,41 @@ async function getReports(token) {
         let osUrl = report.taskUrl;
         let equipId = report.equipmentsId[0];
         let taskDate = report.taskDate;
+        let taskStatus = report.taskStatus
 
-        let verifyTask = await tasks.findAll({
-          where: {
-            auvoId: taskId,
+        await tasks.update(
+          {
+            clientId: clientId,
+            clientId: clientId,
+            typeId: taskType,
+            type: type,
+            equipId: equipId,
+            obs: obs,
+            osUrl: osUrl,
+            taskDate: taskDate,
+            taskStatus: taskStatus,
           },
-        });
-
-        console.log(verifyTask);
+          {
+            where: {
+              auvoId: taskId,
+            },
+          }
+        );
 
           let questionarie = report.questionnaires;
           let lastQuestionarie = questionarie[questionarie.length - 1];
           let answers = lastQuestionarie.answers;
-          let idVerQuestion = answers[1].questionId;
+          let idVerReply = answers[1].replyId;
 
-          let verifyQuestion = await questionaries.findAll({
+          console.log(`Question ID = ${idVerReply}`)
+
+          let verifyReply = await questionaries.findAll({
             where: {
-              questionId: idVerQuestion
+              replyId: idVerReply
             }
           })
 
-          if (verifyQuestion.length === 0) {
+          if (verifyReply.length === 0) {
 
             for (let answer of answers) {
               let questionId = answer.questionId;
