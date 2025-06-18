@@ -19,6 +19,7 @@ const getReportId = require("../controllers/getReportId");
 const getReportsByDate = require("../controllers/getTasks");
 const reviewTasks = require("../controllers/reviewTasks");
 const getMails = require('../controllers/getMails');
+const reportAnalysis = require('../controllers/reportAnalysis');
 const router = express.Router();
 
 // Carregar todas as tarefas no sistema Auvo
@@ -119,6 +120,12 @@ router.get("/auvoapp/reviewtasks", (req,res) =>{
   reviewTasks.iniciar();
   res.send("Review Tasks Iniciada")
 })
+
+router.get("/auvoapp/reportanalysis", (req, res) => {
+  let reportId = req.params.id
+  reportAnalysis.iniciar(reportId); // Executa a função iniciar apenas quando a rota for acessada
+  res.send("Rota reportAnalysis executada com sucesso!");
+});
 
 
  
